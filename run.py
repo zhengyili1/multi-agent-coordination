@@ -7,6 +7,7 @@ from pathlib import Path
 
 from .agents import LLMAdapter
 from .architectures import run_collaborative, run_general, run_independent
+from .config import get_settings
 from .data_loader import build_package
 from .evaluator import score, summarize
 
@@ -28,6 +29,7 @@ def main() -> None:
     if bool(args.org_id) != bool(args.incident_id):
         p.error("--org-id and --incident-id must be supplied together")
     outdir = Path(args.output); outdir.mkdir(parents=True, exist_ok=True)
+    settings = get_settings()
     adapter = LLMAdapter(base_url=args.base_url, api_key=args.api_key,
                          model=args.model, offline=args.offline)
     scores = []

@@ -8,7 +8,7 @@ This lab compares the three requested architectures over the same Microsoft GUID
 2. **Independent multi-agent.** Triage, Endpoint, Network, and Threat agents analyze their own artifact slices. They cannot see one another's findings, share a knowledge base, or ask for more evidence. A fixed majority reducer combines their classifications.
 3. **Collaborative multi-agent.** The same four specialist roles submit provenance-linked findings to the Incident Commander / Orchestrator. It maintains a versioned Shared Knowledge Base, identifies conflicts or gaps, may send one bounded follow-up to a specialist, and makes the final classification.
 
-Students implement these in order: first the general-purpose LLM agent; next the four independent specialist agents; finally the commander/orchestrator and shared KB. The runnable adapter in `agents.py` uses OpenAI-compatible Chat Completions. Replace or extend it for another provider while preserving the artifact access boundaries. To exercise the data pipeline without credentials, pass `--offline`; this is a keyword baseline, not an LLM result.
+Students implement these in order: first the general-purpose LLM agent; next the four independent specialist agents; finally the commander/orchestrator and shared KB. The adapter in `agents.py` sends HTTP requests directly to Jetstream's chat-completions endpoint using Python's standard library, not the OpenAI SDK. Settings follow `src/config.py` in `config.py`. To exercise the data pipeline without credentials, pass `--offline`; this is a keyword baseline, not an LLM result.
 
 ## GUIDE artifact limits
 
@@ -24,13 +24,10 @@ GUIDE does not contain raw authentication activity or full process execution tel
 
 ## Run
 
-Download Kaggle's `GUIDE_Train.csv` into `data/` (do not commit it), then configure an OpenAI-compatible endpoint:
+Download Kaggle's `GUIDE_Train.csv` into `data/` (do not commit it), copy `lab_code2/.env.example` to `.env`, and update Jetstream settings if needed:
 
 ```bash
 python3 -m pip install -r lab_code2/requirements.txt
-export OPENAI_BASE_URL="https://your-openai-compatible-endpoint/v1"
-export OPENAI_API_KEY="..."
-export MODEL_NAME="your-model"
 python3 -m lab_code2.run --csv data/GUIDE_Train.csv --cases 3 --seed 17
 ```
 
