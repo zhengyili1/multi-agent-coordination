@@ -48,3 +48,4 @@ Compare accuracy, per-class precision/recall/F1 and macro-F1, confidence calibra
 
 Suggested report: verdict, confidence, rationale, cited evidence IDs, key entities, timeline, ATT&CK techniques, unresolved uncertainty, and proposed next action. Containment is a recommendation only; this program never performs remediation.
 # multi-agent-coordination
+# multi-agent-coordination
