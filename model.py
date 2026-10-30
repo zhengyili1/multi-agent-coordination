@@ -17,7 +17,7 @@ ARCHITECTURES = {
 }
 
 
-def main(argv: list[str] | None = None, *) -> None:
+def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Run one GUIDE incident-response architecture")
     
     parser.add_argument("--csv", required=True, help="Path to GUIDE_Train.csv")
@@ -30,6 +30,7 @@ def main(argv: list[str] | None = None, *) -> None:
     parser.add_argument("--base-url", default=None)
     parser.add_argument("--api-key", default=None)
     parser.add_argument("--model", default=None)
+    parser.add_argument("--offline", action="store_true", help="Use deterministic baseline instead of calling Jetstream")
     parser.add_argument("--architecture", choices=ARCHITECTURES, required=True,
                             help="single, independent, or collaborative")
     args = parser.parse_args(argv)
