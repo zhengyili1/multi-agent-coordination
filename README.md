@@ -22,22 +22,22 @@ The builder groups evidence by `OrgId` + `IncidentId` and constructs five separa
 
 GUIDE does not contain raw authentication activity or full process execution telemetry. This lab therefore does not create a separate Identity agent. Entity fields in endpoint/network artifacts are evidence proxies and must not be described as confirmed forensic events. Label-derived fields such as `ActionGrouped`, `ActionGranular`, `LastVerdict`, and `SuspicionLevel` are excluded from the agent views. Raw identifiers are pseudonymized. `IncidentGrade` is written only to `answer.json` for evaluation; no model call receives it. Artifact contents are untrusted data, never instructions.
 
-## Run
+## Run one architecture at a time
 
-Download Kaggle's `GUIDE_Train.csv` into `data/` (do not commit it), copy `lab_code2/.env.example` to `.env`, and update Jetstream settings if needed:
-
-```bash
-python3 -m pip install -r lab_code2/requirements.txt
-python3 -m lab_code2.run --csv data/GUIDE_Train.csv --cases 3 --seed 17
-```
-
-To validate artifact creation and the three execution paths without model credentials:
+Install dependencies and configure Jetstream as described in `.env.example`. From the repository root, run exactly one of these commands:
 
 ```bash
-python3 -m lab_code2.run --csv data/GUIDE_Train.csv --cases 3 --seed 17 --offline
+# 1. One general-purpose LLM agent (sees all artifacts)
+python3 run_single.py --csv data/GUIDE_Train.csv --cases 3 --seed 17
+
+# 2. Independent Triage, Endpoint, Network, and Threat agents
+python3 run_independent.py --csv data/GUIDE_Train.csv --cases 3 --seed 17
+
+# 3. Collaborative specialists plus Incident Commander and Shared KB
+python3 run_collaborative.py --csv data/GUIDE_Train.csv --cases 3 --seed 17
 ```
 
-One known incident can be selected with both `--org-id` and `--incident-id`. Output goes to `outputs/lab_code2/`: redacted case packages, evaluator-only answers, three architecture reports, and aggregate scores. A few cases are only a smoke run; use many cases and incident-level splits for evaluation. Hold out organizations to study generalization.
+The shared CLI implementation lives in `model.py`; `python3 run.py --architecture single|independent|collaborative ...` remains a short compatibility command. Add `--offline` to check the data flow without calling Jetstream. Each architecture writes its own results under `outputs/<architecture>/`; cases, reports, scores, and summary metrics stay separated. Use `--org-id` and `--incident-id` together to select a known incident.
 
 ## Evaluation
 

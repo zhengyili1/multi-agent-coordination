@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
-from .schema import LABELS, Report
+from schema import LABELS, Report
 
 
 def score(reports: list[Report], answer: str) -> dict:
@@ -22,7 +22,8 @@ def score(reports: list[Report], answer: str) -> dict:
 def summarize(rows: list[dict]) -> dict:
     """Across cases: accuracy and per-class precision/recall/F1 plus macro-F1."""
     result = {}
-    for architecture in ("general", "independent", "collaborative"):
+    architecture_names = sorted({name for row in rows for name in row.get("architectures", {})})
+    for architecture in architecture_names:
         pairs = [(r["answer"], r["architectures"][architecture]["verdict"]) for r in rows]
         per_class = {}
         f1s = []

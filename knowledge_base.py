@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from .schema import Finding
+from schema import Finding
 
 
 class SharedKnowledgeBase:

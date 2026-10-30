@@ -5,9 +5,8 @@ import random
 from pathlib import Path
 from typing import Any
 
-import pandas as pd
 
-from .schema import Artifact, IncidentPackage, LABELS
+from schema import Artifact, IncidentPackage, LABELS
 
 
 IDENTIFIER_COLUMNS = {
@@ -39,6 +38,8 @@ def _safe(value: Any) -> str:
 def select_incident(csv_path: str | Path, *, seed: int = 17,
                     org_id: str | None = None, incident_id: str | None = None,
                     sample_rows: int = 100_000) -> tuple[str, str]:
+    import pandas as pd
+
     if org_id is not None and incident_id is not None:
         return str(org_id), str(incident_id)
     rng = random.Random(seed)
@@ -57,6 +58,7 @@ def select_incident(csv_path: str | Path, *, seed: int = 17,
 
 def build_package(csv_path: str | Path, *, seed: int = 17, org_id: str | None = None,
                   incident_id: str | None = None, case_size: int = 120) -> IncidentPackage:
+    import pandas as pd
     org, incident = select_incident(csv_path, seed=seed, org_id=org_id, incident_id=incident_id)
     pieces = []
     for chunk in pd.read_csv(csv_path, usecols=lambda c: c in USE_COLUMNS,

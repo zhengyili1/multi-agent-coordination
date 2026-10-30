@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from collections import Counter
-from .agents import LLMAdapter, general_agent, specialist_team
-from .knowledge_base import SharedKnowledgeBase
-from .schema import Finding, IncidentPackage, Report
+from agents import LLMAdapter, general_agent, specialist_team
+from knowledge_base import SharedKnowledgeBase
+from schema import Finding, IncidentPackage, Report
 
 
 def _report(name: str, verdict: str, confidence: float, rationale: str,
@@ -15,12 +15,12 @@ def _report(name: str, verdict: str, confidence: float, rationale: str,
                   findings, kb_version, conflicts or [], followups)
 
 
-def run_general(package: IncidentPackage, adapter: LLMAdapter) -> Report:
+def single_agent(package: IncidentPackage, adapter: LLMAdapter) -> Report:
     result = general_agent(package.visible_package(), adapter)
     return _report("general", result["verdict"], result["confidence"], result["summary"], [])
 
 
-def run_independent(package: IncidentPackage, adapter: LLMAdapter) -> Report:
+def indepenpend_agents(package: IncidentPackage, adapter: LLMAdapter) -> Report:
     view = package.visible_package()
     findings = [agent.investigate(view) for agent in specialist_team(adapter)]
     # The independent condition has no commander/KB and only this fixed reducer sees all reports.
@@ -40,7 +40,7 @@ def run_independent(package: IncidentPackage, adapter: LLMAdapter) -> Report:
     return _report("independent", verdict, confidence, rationale, findings)
 
 
-def run_collaborative(package: IncidentPackage, adapter: LLMAdapter) -> Report:
+def collaborative_agents(package: IncidentPackage, adapter: LLMAdapter) -> Report:
     agents = specialist_team(adapter)
     kb = SharedKnowledgeBase()
     view = package.visible_package()

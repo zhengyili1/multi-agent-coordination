@@ -6,26 +6,12 @@ from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from .config import get_settings
-from .schema import Finding
+from config import get_settings
+from schema import Finding
 
 
 def _rows(artifacts: dict, kind: str) -> list[dict[str, Any]]:
     return artifacts.get(kind, {}).get("rows", [])
-
-
-def _offline_assessment(role: str, artifacts: dict) -> dict:
-    """Simple deterministic option for validating data flow without an LLM."""
-    rows = [row for artifact in artifacts.values() for row in artifact.get("rows", [])]
-    text = " ".join(json.dumps(row, ensure_ascii=False) for row in rows).lower()
-    cues = ("malware", "ransom", "exfiltration", "commandandcontrol", "credentialaccess", "lateral")
-    count = sum(text.count(cue) for cue in cues)
-    verdict = "TruePositive" if count >= 2 else "BenignPositive"
-    return {"verdict": verdict, "confidence": min(.85, .45 + .08 * count),
-            "summary": f"Offline {role} keyword baseline found {count} threat-associated metadata cues.",
-            "observations": [f"{k}: {len(v.get('rows', []))} rows" for k, v in artifacts.items()],
-            "uncertainties": ["Offline baseline; not an LLM assessment."]}
-
 
 class LLMAdapter:
     """Direct HTTP client for Jetstream's chat-completions endpoint; no OpenAI SDK."""
